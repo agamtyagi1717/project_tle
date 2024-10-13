@@ -63,7 +63,7 @@ fibonacci(10);`
 
   return (
     <div className="flex flex-col">
-      <div className="flex justify-end mb-2 gap-2">
+      <div className="flex justify-end md:flex-row flex-col mb-2 gap-2">
         <Button variant="outline" onClick={() => setEditorTheme(!editorTheme)}>
           {editorTheme ? <Moon size={20} /> : <Sun size={20} />}
         </Button>

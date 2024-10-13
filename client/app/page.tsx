@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div>
       <div className="h-full flex justify-center gap-4 items-center flex-col mt-40">
-        <p className="text-3xl w-[700px] text-center">
+        <p className="text-xl md:text-3xl w-[70vw] text-center">
           An online compiler to write ✍️, run 🚀, and debug code instantly
           across multiple languages, all in one place! 💻
         </p>
