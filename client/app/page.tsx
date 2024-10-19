@@ -7,7 +7,8 @@ import { useEffect } from "react";
 
 export default function Home() {
   useEffect(() => {
-    fetch("http://localhost:8000/")
+    fetch("https://project-tle.onrender.com")
+    // fetch("http://localhost:8000/")
       .then((response) => response.json())
       .then((data) => console.log(data))
       .catch((error) => console.log("Error fetching the data:", error));

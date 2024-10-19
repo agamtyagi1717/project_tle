@@ -69,3 +69,34 @@
   flex: 1 1 auto;
   min-width: 0;
 }
+
+/* For Chrome, Edge, and Safari */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #00000000;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(139, 165, 250);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(139, 165, 250);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(139, 165, 250) #00000000;
+}
+
+/* Custom scrollbar track and thumb for Firefox */
+html {
+  scrollbar-color: rgb(139, 165, 250) #00000000;
+  scrollbar-width: thin;
+}

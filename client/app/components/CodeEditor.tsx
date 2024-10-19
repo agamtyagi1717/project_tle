@@ -1,10 +1,10 @@
 "use client";
 
 import { Editor } from "@monaco-editor/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LanguageSelector } from "./LanguageSelector";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftFromLine, Moon, Play, Sun } from "lucide-react";
+import { ArrowLeftFromLine, Moon, Play, Send, Sun } from "lucide-react";
 import { io } from "socket.io-client";
 import { Input } from "@/components/ui/input";
 import { ToastContainer, toast } from "react-toastify";
@@ -23,6 +23,14 @@ const CodeEditor = ({ setCodeToken, codeInput }: CodeEditorProps) => {
   const [otherRoomID, setOtherRoomID] = useState("");
   const [username, setUsername] = useState("");
   const [roomID, setRoomID] = useState("");
+  const [message, setMessage] = useState("");
+  const [roomMessages, setRoomMessages] = useState([
+    {
+      username: "System",
+      message: "Welcome to the room chat!",
+    },
+  ]);
+  const [chatOpen, setChatOpen] = useState(true);
   const [code, setCode] = useState(
     `// Fibonacci series in JavaScript
 function fibonacci(n) {
@@ -105,10 +113,25 @@ fibonacci(10);`
     }
     setRoomID(otherRoomID);
 
+    const joinMsg = username + " joined room " + otherRoomID;
+
+    socket.emit("roomMessages", {
+      username: "System",
+      roomID: otherRoomID,
+      message: joinMsg,
+    });
     socket.emit("joinRoom", { otherRoomID, username });
   };
   const exitRoom = (e: any) => {
     e.preventDefault();
+
+    const leaveMsg = username + " left room " + roomID;
+
+    socket.emit("roomMessages", {
+      username: "System",
+      roomID,
+      message: leaveMsg,
+    });
 
     socket.emit("leaveRoom", { username, roomID });
     toast.info(`Left Room ${otherRoomID}`, {
@@ -123,6 +146,16 @@ fibonacci(10);`
     });
 
     setRoomID("");
+  };
+  const sendMessage = (e: any) => {
+    e.preventDefault();
+    socket.emit("roomMessages", { username, roomID, message });
+    setMessage("");
+
+    setRoomMessages((prevMessages) => [
+      ...prevMessages,
+      { username: "You", message: message },
+    ]);
   };
 
   useEffect(() => {
@@ -161,12 +194,26 @@ fibonacci(10);`
       });
     });
 
+    socket.on("message", ({ username, message }) => {
+      console.log(username, message);
+      setRoomMessages((prevMessages) => [
+        ...prevMessages,
+        { username: username, message: message },
+      ]);
+    });
+
     setSocket(socket);
 
     return () => {
       socket.disconnect();
     };
   }, []);
+
+  const messagesEndRef = useRef<HTMLTableRowElement | null>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [roomMessages]);
 
   return (
     <div className="flex flex-col">
@@ -184,7 +231,7 @@ fibonacci(10);`
       />
       <div className="flex sm:items-center justify-between mb-2 gap-2 sm:flex-row flex-col">
         {!roomID ? (
-          <div className="flex gap-2 xl:flex-row flex-col">
+          <form onSubmit={(e) => joinRoom(e)} className="flex gap-2 xl:flex-row flex-col">
             <Input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -196,20 +243,31 @@ fibonacci(10);`
               placeholder="Enter Room ID"
             />
             <Button
+              type="submit"
               onClick={(e) => joinRoom(e)}
               className="bg-green-600 text-white hover:bg-green-500"
             >
               Enter Room
             </Button>
-          </div>
+          </form>
         ) : (
-          <Button
-            onClick={(e) => exitRoom(e)}
-            className="flex gap-2 bg-red-600 text-white hover:bg-red-500"
-          >
-            <ArrowLeftFromLine size={20} />
-            Exit Room
-          </Button>
+          <form onSubmit={(e) => exitRoom(e)} className="flex gap-2 xl:flex-row flex-col">
+            <Button
+              type="submit"
+              onClick={(e) => exitRoom(e)}
+              className="flex gap-2 bg-red-600 text-white hover:bg-red-500"
+            >
+              <ArrowLeftFromLine size={20} />
+              Exit Room
+            </Button>
+            <Button
+              type="button"
+              onClick={() => setChatOpen(chatOpen => !chatOpen)}
+              className="flex gap-2 bg-pink-600 text-white hover:bg-pink-500"
+            >
+              {chatOpen ? "Close Room Chat" : "Open Room Chat"}
+            </Button>
+          </form>
         )}
         <div className="flex gap-2 xl:flex-row flex-col">
           <Button
@@ -233,17 +291,55 @@ fibonacci(10);`
           </Button>
         </div>
       </div>
-      <div>
-        <Editor
-          className=" border border-blue-800"
-          theme={editorTheme ? "light" : "vs-dark"}
-          height="74vh"
-          
-          value={code}
-          language={language}
-          onChange={(value) => handleEditorChange(value)}
-        />
-      </div>
+      <Editor
+        className=" border border-blue-800"
+        theme={editorTheme ? "light" : "vs-dark"}
+        height="74vh"
+        value={code}
+        language={language}
+        onChange={(value) => handleEditorChange(value)}
+      />
+
+      {/* RoomChat */}
+      {roomID && chatOpen && (
+        <div className="w-full flex flex-col gap-3 px-10 py-5 bg-blue-800 bg-opacity-10 border-t-2 border-blue-800 left-0 right-0 h-96 fixed bottom-0 backdrop-blur-sm">
+          <h1 className="sticky top-0 bg-black backdrop-blur-lg bg-opacity-20 p-3 text-xl text-white">
+            Room ID: {roomID}
+          </h1>
+
+          <div className="overflow-y-scroll h-full">
+            <table className="table-auto w-full">
+              <tbody>
+                {roomMessages.map((item, index) => (
+                  <tr key={index}>
+                    <td className="text-sm text-pink-500 w-20 align-top py-1">
+                      {item.username}:
+                    </td>
+                    <td className="text-yellow-400 align-top py-1">
+                      {item.message}
+                    </td>
+                  </tr>
+                ))}
+                <tr ref={messagesEndRef}></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="sticky bottom-0 left-10 right-10">
+            <form onSubmit={(e) => sendMessage(e)} className="flex gap-3">
+              <Input
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Start typing..."
+                className="w-full border-2 border-primary"
+              />
+              <Button type="submit" onClick={(e) => sendMessage(e)}>
+                <Send />
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
