@@ -182,9 +182,9 @@ fibonacci(10);`
         pauseOnHover
         theme="dark"
       />
-      <div className="flex items-center justify-between mb-2 gap-2">
+      <div className="flex sm:items-center justify-between mb-2 gap-2 sm:flex-row flex-col">
         {!roomID ? (
-          <div className="flex gap-1 xl:flex-row flex-col">
+          <div className="flex gap-2 xl:flex-row flex-col">
             <Input
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -211,7 +211,7 @@ fibonacci(10);`
             Exit Room
           </Button>
         )}
-        <div className="flex gap-1 xl:flex-row flex-col">
+        <div className="flex gap-2 xl:flex-row flex-col">
           <Button
             variant="outline"
             onClick={() => setEditorTheme(!editorTheme)}
