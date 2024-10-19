@@ -126,7 +126,8 @@ fibonacci(10);`
   };
 
   useEffect(() => {
-    const socket = io("http://localhost:8000/");
+    // const socket = io("http://localhost:8000/");
+    const socket = io("https://project-tle.onrender.com");
 
     socket.on("connect", () => {
       console.log("Connected to the server with ID:", socket.id);
