@@ -1,14 +1,25 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    fetch("http://localhost:8000/")
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.log("Error fetching the data:", error));
+  }, []);
+
   return (
     <div>
       <div className="h-full flex justify-center gap-4 items-center flex-col mt-40">
         <p className="text-xl md:text-3xl w-[70vw] text-center">
-          An online compiler to write ✍️, run 🚀, and debug code instantly
-          across multiple languages, all in one place! 💻
+          A collaborative online coding environment to write ✍️, run 🚀, and
+          debug code instantly across multiple languages, with real-time
+          collaboration and sharing, all in one place! 💻
         </p>
         <Link href="/sandbox">
           <Button
