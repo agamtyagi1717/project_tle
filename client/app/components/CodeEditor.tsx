@@ -53,6 +53,7 @@ fibonacci(10);`
     if (roomID !== "") {
       socket.emit("editorChange", value);
     }
+    setCode(value);
   };
 
   const runCode = async () => {

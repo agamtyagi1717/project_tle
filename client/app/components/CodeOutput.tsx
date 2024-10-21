@@ -48,6 +48,7 @@ const CodeOutput = ({ codeToken, setCodeInput }: CodeOutputProps) => {
   };
 
   const handleExecution = async (codeToken: string) => {
+    setOutput("Computing...");
     const res = await polling(codeToken);
     // console.log(res);
 
