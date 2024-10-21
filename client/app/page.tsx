@@ -8,7 +8,7 @@ import { useEffect } from "react";
 export default function Home() {
   useEffect(() => {
     fetch("https://project-tle.onrender.com")
-    // fetch("http://localhost:8000/")
+      // fetch("http://localhost:8000/")
       .then((response) => response.json())
       .then((data) => console.log(data))
       .catch((error) => console.log("Error fetching the data:", error));
@@ -16,6 +16,17 @@ export default function Home() {
 
   return (
     <div>
+      <div className="container">
+        <div className="blob-c">
+          <div className="shape-blob"></div>
+          <div className="shape-blob one"></div>
+          <div className="shape-blob two"></div>
+          <div className="shape-blob three"></div>
+          <div className="shape-blob four"></div>
+          <div className="shape-blob five"></div>
+          <div className="shape-blob six"></div>
+        </div>
+      </div>
       <div className="h-full flex justify-center gap-4 items-center flex-col mt-40">
         <p className="text-xl md:text-3xl w-[70vw] text-center">
           A collaborative online coding environment to write ✍️, run 🚀, and
@@ -25,7 +36,7 @@ export default function Home() {
         <Link href="/sandbox">
           <Button
             variant="outline"
-            className="py-2 border border-blue-800 flex gap-2 text-md font-semibold"
+            className="py-2 border border-blue-800 flex gap-2 text-md font-semibold bg-opacity-0"
           >
             Start coding
             <ArrowRight
